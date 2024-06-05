@@ -1,0 +1,22 @@
+CPP_FILES := $(wildcard ../examples/*.cpp)
+OBJ_FILES := $(patsubst ../examples/%.cpp,../obj/%.o,$(CPP_FILES))
+MAIN_OBJ := ../obj/main.o
+EXECUTABLE_STATIC := ../bin/main_static
+EXECUTABLE_DYNAMIC := ../bin/main_dynamic
+
+all: $(EXECUTABLE_DYNAMIC) $(EXECUTABLE_STATIC)
+
+$(EXECUTABLE_STATIC): $(MAIN_OBJ)
+	mkdir -p ../bin
+	g++ $< -o $@ -l_static -L../lib
+
+$(EXECUTABLE_DYNAMIC): $(MAIN_OBJ)
+	mkdir -p ../bin
+	g++ $< -o $@ ../lib/lib_dynamic.so
+
+../obj/%.o: ../examples/%.cpp
+	mkdir -p ../obj
+	g++ -O3 -fPIC -c $< -o $@
+
+clean:
+	rm -f $(EXECUTABLE)

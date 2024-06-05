@@ -1,0 +1,35 @@
+C_FILES := $(wildcard ../examples/*.c)
+OBJ_FILES := $(patsubst ../examples/%.c,../obj/%.o,$(C_FILES))
+EXAMPLE_OBJ := ../obj/example.o
+MINIGZIP_OBJ := ../obj/minigzip.o
+EXECUTABLE := ../bin/*
+
+EXAMPLE_STATIC := ../bin/example_static
+EXAMPLE_DYNAMIC := ../bin/example_dynamic
+MINIGZIP_STATIC := ../bin/minigzip_static
+MINIGZIP_DYNAMIC := ../bin/minigzip_dynamic
+
+all: $(EXAMPLE_STATIC) $(EXAMPLE_DYNAMIC) $(MINIGZIP_STATIC) $(MINIGZIP_DYNAMIC)
+
+$(EXAMPLE_STATIC): $(EXAMPLE_OBJ)
+	mkdir -p ../bin
+	gcc $< -o $@ -l_static -L../lib
+
+$(EXAMPLE_DYNAMIC): $(EXAMPLE_OBJ)
+	mkdir -p ../bin
+	gcc $< -o $@ ../lib/lib_dynamic.so
+
+$(MINIGZIP_STATIC): $(MINIGZIP_OBJ)
+	mkdir -p ../bin
+	gcc $< -o $@ -l_static -L../lib
+
+$(MINIGZIP_DYNAMIC): $(MINIGZIP_OBJ)
+	mkdir -p ../bin
+	gcc $< -o $@ ../lib/lib_dynamic.so
+
+../obj/%.o: ../examples/%.c
+	mkdir -p ../obj
+	gcc -O3 -fPIC -c $< -o $@
+
+clean:
+	rm -f $(EXECUTABLE)

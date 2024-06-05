@@ -1,0 +1,21 @@
+CPP_FILES := $(wildcard ../library/*.cpp)
+OBJ_FILES := $(patsubst ../library/%.cpp,../obj/%.o,$(CPP_FILES))
+STATIC_LIB := ../lib/lib_static.a
+DYNAMIC_LIB := ../lib/lib_dynamic.so
+
+all: $(STATIC_LIB) $(DYNAMIC_LIB)
+
+$(STATIC_LIB): $(OBJ_FILES)
+	mkdir -p ../lib
+	ar rcs $@ $^
+
+$(DYNAMIC_LIB): $(OBJ_FILES)
+	mkdir -p ../lib
+	g++ -shared -fPIC -o $@ $^
+
+../obj/%.o: ../library/%.cpp
+	mkdir -p ../obj
+	g++ -fPIC -O3 -c $< -o $@
+
+clean:
+	rm -f $(OBJ_FILES) $(STATIC_LIB) $(DYNAMIC_LIB)
